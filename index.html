@@ -52,7 +52,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-2 text-gray-400">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                             </svg>
-                            <p class="text-sm text-gray-600">Click to Upload Photo</p>
+                            <p class="text-sm text-gray-600">ക്ലിക്ക് ചെയ്ത് ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക</p>
                         </div>
                         <input type="file" id="imageInput" accept="image/png, image/jpeg" class="hidden" />
                     </label>
@@ -89,7 +89,7 @@
 
         <!-- Section 2: Preview / Result (മൊബൈലിൽ ഇത് താഴെ വരും) -->
         <div class="w-full md:w-1/2 bg-gray-50 p-6 flex flex-col items-center justify-center order-2">
-            <h3 class="text-sm uppercase tracking-wider text-gray-500 font-bold mb-4 text-center" id="previewTitle">Preview</h3>
+            <h3 class="text-sm uppercase tracking-wider text-gray-500 font-bold mb-4 text-center" id="previewTitle">പ്രിവ്യൂ</h3>
             
             <!-- Default Template Preview -->
             <div id="defaultPreview" class="canvas-container bg-white border border-gray-200">
@@ -135,7 +135,7 @@
         
         // 1. ഫോട്ടോയുടെ സ്ഥാനം (ക്രമീകരിച്ചത്)
         // വലത്തോട്ട് നീക്കാൻ X കൂട്ടുക, താഴോട്ട് നീക്കാൻ Y കൂട്ടുക
-        const PHOTO_X = 400;      
+        const PHOTO_X = 430;      // വലത്തോട്ട് നീക്കി (മുമ്പ് 400 ആയിരുന്നു)
         const PHOTO_Y = 170;      
         const PHOTO_WIDTH = 680;  
         const PHOTO_HEIGHT = 680; 
@@ -233,7 +233,7 @@
             actionSection.classList.remove('hidden');
             defaultPreview.classList.add('hidden');
             resultPreview.classList.remove('hidden');
-            previewTitle.innerText = "Generated Poster";
+            previewTitle.innerText = "തയ്യാറാക്കിയ പോസ്റ്റർ";
             // മൊബൈലിൽ റിസൾട്ട് കാണാൻ താഴേക്ക് സ്ക്രോൾ ചെയ്യിക്കുന്നു
             resultPreview.scrollIntoView({ behavior: 'smooth' });
         }
@@ -272,7 +272,7 @@
             inputSection.classList.remove('hidden');
             resultPreview.classList.add('hidden');
             defaultPreview.classList.remove('hidden');
-            previewTitle.innerText = "Preview";
+            previewTitle.innerText = "പ്രിവ്യൂ";
             studentNameInput.value = '';
             imageInput.value = '';
             if(cropper) cropper.destroy();
