@@ -23,10 +23,6 @@
         }
         canvas { max-width: 100%; height: auto; display: block; }
         .cropper-container { max-height: 50vh; }
-        
-        /* Loading overlay */
-        #loader { display: none; }
-        .loading #loader { display: flex; }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8 flex items-center justify-center">
@@ -71,7 +67,7 @@
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                                 </svg>
                                 <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                                <p class="text-xs text-gray-500">PNG or JPG (Max. 5MB)</p>
+                                <p class="text-xs text-gray-500">PNG or JPG</p>
                             </div>
                             <input type="file" id="imageInput" accept="image/png, image/jpeg" class="hidden" />
                         </label>
@@ -115,21 +111,17 @@
         // DOM Elements
         const imageInput = document.getElementById('imageInput');
         const studentNameInput = document.getElementById('studentName');
-        
         const inputSection = document.getElementById('input-section');
         const cropSection = document.getElementById('crop-section');
         const actionSection = document.getElementById('action-section');
-        
         const defaultPreview = document.getElementById('defaultPreview');
         const resultPreview = document.getElementById('resultPreview');
         const previewTitle = document.getElementById('previewTitle');
-        
         const imageToCrop = document.getElementById('imageToCrop');
         const generateBtn = document.getElementById('generateBtn');
         const cancelCropBtn = document.getElementById('cancelCropBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const resetBtn = document.getElementById('resetBtn');
-        
         const canvas = document.getElementById('posterCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -139,17 +131,21 @@
         // IMPORTANT: The transparent PNG template file name
         templateImage.src = 'template.png'; 
 
-        // --- POSITION COORDINATES ---
-        // പുതിയ ഇമേജിന് (20260327_142244.jpg) അനുസരിച്ചുള്ള ഏകദേശ അളവുകൾ. 
-        // വട്ടം കൃത്യമല്ലെങ്കിൽ ഈ നമ്പറുകൾ മാറ്റുക.
-        const PHOTO_X = 460;      // ഫോട്ടോ തുടങ്ങേണ്ട X കോർഡിനേറ്റ് (വലതുവശത്തേക്ക് നീങ്ങി)
-        const PHOTO_Y = 120;      // ഫോട്ടോ തുടങ്ങേണ്ട Y കോർഡിനേറ്റ്
-        const PHOTO_WIDTH = 610;  // ഫോട്ടോയുടെ വീതി (വലുതാക്കി)
-        const PHOTO_HEIGHT = 610; // ഫോട്ടോയുടെ ഉയരം
+        // =========================================================================
+        // ⚠️ ഫോട്ടോയുടെയും പേരിന്റെയും സ്ഥാനം ക്രമീകരിക്കാനുള്ള കോർഡിനേറ്റുകൾ
+        // (വരി നമ്പർ: 173 മുതൽ 182 വരെ)
+        // =========================================================================
+        
+        // 1. ഫോട്ടോയുടെ സ്ഥാനം (Photo Position)
+        const PHOTO_X = 380;      // ഫോട്ടോ ഇടത്തുനിന്നും വലത്തോട്ട് നീക്കാൻ നമ്പർ കൂട്ടുക
+        const PHOTO_Y = 160;      // ഫോട്ടോ മുകളിൽ നിന്നും താഴോട്ട് ഇറക്കാൻ നമ്പർ കൂട്ടുക
+        const PHOTO_WIDTH = 680;  // ഫോട്ടോയുടെ വീതി (വൃത്തത്തിന്റെ വലുപ്പം)
+        const PHOTO_HEIGHT = 680; // ഫോട്ടോയുടെ ഉയരം (വൃത്തത്തിന്റെ വലുപ്പം)
 
-        // പേര് വരേണ്ട സ്ഥലം (ഇടതുവശത്ത് താഴെ)
-        const TEXT_X = 270;       
-        const TEXT_Y = 820;       
+        // 2. പേര് വരുന്ന സ്ഥാനം (Text Position)
+        const TEXT_X = 265;       // പേര് ഇടത്തുനിന്നും വലത്തോട്ട് നീക്കാൻ നമ്പർ കൂട്ടുക
+        const TEXT_Y = 820;       // പേര് മുകളിൽ നിന്നും താഴോട്ട് ഇറക്കാൻ നമ്പർ കൂട്ടുക
+        // =========================================================================
 
         // Handle Image Upload
         imageInput.addEventListener('change', function (e) {
@@ -161,7 +157,6 @@
                 reader.onload = function (event) {
                     imageToCrop.src = event.target.result;
                     
-                    // Toggle UI
                     inputSection.classList.add('hidden');
                     cropSection.classList.remove('hidden');
                     
@@ -169,9 +164,8 @@
                         cropper.destroy();
                     }
                     
-                    // Initialize Cropper (1:1 Aspect ratio for perfect circle mapping)
                     cropper = new Cropper(imageToCrop, {
-                        aspectRatio: 1,
+                        aspectRatio: 1, // കൃത്യമായ വട്ടം കിട്ടാൻ 1:1 അനുപാതം
                         viewMode: 1,
                         dragMode: 'move',
                         background: false
@@ -200,8 +194,6 @@
             if (!cropper) return;
 
             const name = studentNameInput.value.trim();
-            
-            // Get cropped image data
             const croppedCanvas = cropper.getCroppedCanvas({
                 width: PHOTO_WIDTH,
                 height: PHOTO_HEIGHT
@@ -211,48 +203,42 @@
         });
 
         function generateCanvasImage(userImageCanvas, name) {
-            // 1. Clear Canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 2. Draw User Photo FIRST (Behind the template)
+            // ഫോട്ടോ ആദ്യം വരയ്ക്കുന്നു (ടെംപ്ലേറ്റിന് പിന്നിലായി വരാൻ)
             ctx.drawImage(userImageCanvas, PHOTO_X, PHOTO_Y, PHOTO_WIDTH, PHOTO_HEIGHT);
 
-            // 3. Draw Template Image OVER the photo (Template MUST have a transparent hole)
+            // ട്രാൻസ്പരൻ്റ് ആയ ടെംപ്ലേറ്റ് മുകളിൽ വരയ്ക്കുന്നു
             ctx.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
 
-            // 4. Draw Student Name
+            // പേര് എഴുതുന്നു
             if (name) {
                 const isArabic = containsArabic(name);
                 
-                // Multi-language Font Stack
-                // If it's Arabic, 'Noto Kufi Arabic' is applied. Otherwise 'Noto Sans Malayalam' or 'Poppins'
-                ctx.font = "bold 42px 'Noto Kufi Arabic', 'Noto Sans Malayalam', 'Poppins', sans-serif";
+                // ഇംഗ്ലീഷ്, മലയാളം, അറബി ഫോണ്ടുകൾ
+                ctx.font = "bold 46px 'Noto Kufi Arabic', 'Noto Sans Malayalam', 'Poppins', sans-serif";
                 
-                // Set text color to match the design (e.g., the red color from the template, or standard black/white)
-                ctx.fillStyle = "#a81628"; // Red color matching the theme
+                // പേരിന്റെ നിറം (ഇപ്പോൾ നൽകിയിരിക്കുന്നത് ഡിസൈനിലെ ചുവപ്പ് നിറമാണ്)
+                ctx.fillStyle = "#a81628"; 
                 ctx.textAlign = "center";
                 
-                // Handle RTL direction for Arabic text
                 if (isArabic) {
                     ctx.direction = "rtl";
                 } else {
                     ctx.direction = "ltr";
                 }
 
-                // Add text with slight shadow for better readability
-                ctx.shadowColor = "rgba(255, 255, 255, 0.8)";
+                ctx.shadowColor = "rgba(255, 255, 255, 0.9)";
                 ctx.shadowBlur = 4;
                 ctx.shadowOffsetX = 1;
                 ctx.shadowOffsetY = 1;
 
                 ctx.fillText(name, TEXT_X, TEXT_Y);
                 
-                // Reset shadow and direction
                 ctx.shadowBlur = 0;
                 ctx.direction = "ltr";
             }
 
-            // Update UI to show result
             cropSection.classList.add('hidden');
             actionSection.classList.remove('hidden');
             
@@ -265,14 +251,12 @@
         downloadBtn.addEventListener('click', function () {
             const link = document.createElement('a');
             link.download = 'Admission_Poster_2026.jpg';
-            // Export as high quality JPEG
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
         });
 
         // Reset Action
         resetBtn.addEventListener('click', function() {
-            // Reset UI
             actionSection.classList.add('hidden');
             inputSection.classList.remove('hidden');
             
@@ -280,12 +264,10 @@
             defaultPreview.classList.remove('hidden');
             previewTitle.innerText = "Poster Preview";
             
-            // Clear inputs
             studentNameInput.value = '';
             imageInput.value = '';
             if(cropper) cropper.destroy();
         });
-
     </script>
 </body>
 </html>
