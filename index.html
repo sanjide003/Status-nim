@@ -17,7 +17,7 @@
         }
         .canvas-container { 
             width: 100%;
-            max-width: 500px; /* മൊബൈലിൽ അധികം വലുതാകാതിരിക്കാൻ */
+            max-width: 500px; 
             margin: 0 auto;
             overflow: hidden; 
             border-radius: 12px; 
@@ -31,7 +31,7 @@
 
     <div class="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
         
-        <!-- Section 1: Form Controls (മൊബൈലിൽ ഇത് മുകളിൽ വരും) -->
+        <!-- Section 1: Form Controls -->
         <div class="w-full md:w-1/2 p-6 md:p-8 flex flex-col border-b md:border-b-0 md:border-r border-gray-200 order-1">
             <div class="mb-6">
                 <h2 class="text-2xl font-bold text-red-800 mb-2">പോസ്റ്റർ തയ്യാറാക്കാം</h2>
@@ -59,7 +59,7 @@
                 </div>
             </div>
 
-            <!-- Crop Section (Hidden initially) -->
+            <!-- Crop Section -->
             <div id="crop-section" class="hidden flex-1 space-y-4">
                 <div class="flex justify-between items-center">
                     <h3 class="text-sm font-bold text-gray-700">ഫോട്ടോ ക്രമീകരിക്കുക</h3>
@@ -73,7 +73,7 @@
                 </button>
             </div>
 
-            <!-- Action Buttons (Visible after generation) -->
+            <!-- Action Buttons -->
             <div id="action-section" class="hidden mt-auto pt-6 space-y-3">
                 <button id="downloadBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl flex justify-center items-center gap-2 transition shadow-md">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
@@ -87,16 +87,14 @@
             </div>
         </div>
 
-        <!-- Section 2: Preview / Result (മൊബൈലിൽ ഇത് താഴെ വരും) -->
+        <!-- Section 2: Preview / Result -->
         <div class="w-full md:w-1/2 bg-gray-50 p-6 flex flex-col items-center justify-center order-2">
             <h3 class="text-sm uppercase tracking-wider text-gray-500 font-bold mb-4 text-center" id="previewTitle">പ്രിവ്യൂ</h3>
             
-            <!-- Default Template Preview -->
             <div id="defaultPreview" class="canvas-container bg-white border border-gray-200">
                 <img src="template.png" alt="Template Preview" id="templateImg" class="w-full h-auto" onerror="this.src='https://via.placeholder.com/1080x1080.png?text=Template+Not+Found'">
             </div>
 
-            <!-- Canvas Result (Hidden initially) -->
             <div id="resultPreview" class="canvas-container hidden bg-white border border-gray-200">
                 <canvas id="posterCanvas" width="1080" height="1080"></canvas>
             </div>
@@ -104,10 +102,8 @@
 
     </div>
 
-    <!-- Cropper.js Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
-        // UI Elements
         const imageInput = document.getElementById('imageInput');
         const studentNameInput = document.getElementById('studentName');
         const inputSection = document.getElementById('input-section');
@@ -126,37 +122,35 @@
 
         let cropper;
         let templateImage = new Image();
-        // ⚠️ പ്രധാനം: നിങ്ങളുടെ transparent PNG ഫയലിന്റെ പേര് ഇവിടെ നൽകുക
         templateImage.src = 'template.png'; 
 
         // =========================================================================
         // ⚙️ കോൺഫിഗറേഷൻ (Coordinates & Settings)
         // =========================================================================
         
-        // 1. ഫോട്ടോയുടെ സ്ഥാനം (ക്രമീകരിച്ചത്)
-        // വലത്തോട്ട് നീക്കാൻ X കൂട്ടുക, താഴോട്ട് നീക്കാൻ Y കൂട്ടുക
-        const PHOTO_X = 430;      // വലത്തോട്ട് നീക്കി (മുമ്പ് 400 ആയിരുന്നു)
+        // 1. ഫോട്ടോയുടെ സ്ഥാനം (കൂടുതൽ വലത്തോട്ട് നീക്കി)
+        const PHOTO_X = 460;      // 430-ൽ നിന്നും 460 ആയി വർദ്ധിപ്പിച്ചു
         const PHOTO_Y = 170;      
         const PHOTO_WIDTH = 680;  
         const PHOTO_HEIGHT = 680; 
 
-        // 2. പേരിന്റെ സ്ഥാനം (ഇടതുവശം ചേർന്ന്)
-        const TEXT_START_X = 50; // ഇടത് മാർജിനിൽ നിന്നുള്ള അകലം
-        const TEXT_Y = 830;      // താഴെ നിന്നുള്ള ഉയരം
+        // 2. പേരിന്റെ സ്ഥാനം 
+        const TEXT_START_X = 60; // ഇടത് മാർജിൻ അല്പം കൂട്ടി
+        const TEXT_Y = 830;      
         
         // 3. ഫോണ്ട് സെറ്റിംഗ്സ്
         const FONT_SIZE = 48;
         const FONT_FAMILY = "'Noto Kufi Arabic', 'Noto Sans Malayalam', 'Poppins', sans-serif";
-        const TEXT_COLOR = "#a81628"; // ചുവപ്പ് നിറം
+        const TEXT_COLOR = "#8B0000"; // കടും ചുവപ്പ് (Dark Red) നിറം
 
-        // 4. പേരിന് പിന്നിലെ ബോക്സ് സെറ്റിംഗ്സ്
-        const BOX_PADDING_X = 30; // ബോക്സിന്റെ വശങ്ങളിലെ പാഡിംഗ്
-        const BOX_HEIGHT = 90;    // ബോക്സിന്റെ ഉയരം
-        const BOX_COLOR = "rgba(255, 255, 255, 0.85)"; // ഇളം വെളുപ്പ് നിറം (Transparent)
+        // 4. പേരിന് പിന്നിലെ ബോക്സ് സെറ്റിംഗ്സ് (അപ്‌ഡേറ്റ് ചെയ്തത്)
+        const BOX_PADDING_X = 40; // ബോക്സിന്റെ വീതി അല്പം കൂട്ടി
+        const BOX_HEIGHT = 100;    // ബോക്സിന്റെ ഉയരം അല്പം കൂട്ടി
+        const BOX_COLOR = "#FDD835"; // ഡിസൈനിലെ മഞ്ഞ (Yellow/Gold) നിറം
+        const BOX_RADIUS = 50;       // കൂടുതൽ റൗണ്ടഡ് കോർണറുകൾ (Pill shape)
         // =========================================================================
 
 
-        // Image Upload Handler
         imageInput.addEventListener('change', function (e) {
             const files = e.target.files;
             if (files && files.length > 0) {
@@ -175,14 +169,11 @@
             }
         });
 
-        // Cancel Crop
         cancelCropBtn.addEventListener('click', resetUI);
 
-        // Generate Poster Click Handler
         generateBtn.addEventListener('click', function () {
             const name = studentNameInput.value.trim();
             
-            // ⚠️ Validation: പേരും ഫോട്ടോയും നിർബന്ധമാണ്
             if (!name || !cropper) {
                 alert("ദയവായി വിദ്യാർത്ഥിയുടെ പേരും ഫോട്ടോയും നൽകുക.");
                 return;
@@ -194,51 +185,45 @@
             generateCanvasImage(croppedCanvas, name);
         });
 
-        // Main Canvas Drawing Function
         function generateCanvasImage(userImageCanvas, name) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Draw User Photo (Behind)
+            // ഫോട്ടോ വരയ്ക്കുന്നു
             ctx.drawImage(userImageCanvas, PHOTO_X, PHOTO_Y, PHOTO_WIDTH, PHOTO_HEIGHT);
 
-            // 2. Draw Template (Front)
+            // ടെംപ്ലേറ്റ് വരയ്ക്കുന്നു
             ctx.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
 
-            // 3. Draw Name with Background Box
+            // പേരും ബോക്സും വരയ്ക്കുന്നു
             if (name) {
-                // ഫോണ്ട് സെറ്റ് ചെയ്യുന്നു
                 ctx.font = `bold ${FONT_SIZE}px ${FONT_FAMILY}`;
-                ctx.textAlign = "left"; // ഇടതുവശം ചേർക്കുന്നു
+                ctx.textAlign = "left"; 
                 ctx.textBaseline = "middle";
 
-                // പേരിന്റെ നീളം അളക്കുന്നു (ബോക്സ് ഉണ്ടാക്കാൻ)
                 const textMetrics = ctx.measureText(name);
                 const textWidth = textMetrics.width;
 
-                // ബോക്സിന്റെ വലിപ്പവും സ്ഥാനവും കണക്കാക്കുന്നു
                 const boxX = TEXT_START_X - BOX_PADDING_X;
                 const boxY = TEXT_Y - (BOX_HEIGHT / 2);
                 const boxWidth = textWidth + (BOX_PADDING_X * 2);
 
-                // A) ബോക്സ് വരയ്ക്കുന്നു (Draw Box)
-                drawRoundedRect(ctx, boxX, boxY, boxWidth, BOX_HEIGHT, 15, BOX_COLOR);
+                // റൗണ്ടഡ് ബോക്സ് വരയ്ക്കുന്നു (മഞ്ഞ നിറത്തിൽ)
+                drawRoundedRect(ctx, boxX, boxY, boxWidth, BOX_HEIGHT, BOX_RADIUS, BOX_COLOR);
 
-                // B) പേര് എഴുതുന്നു (Draw Text)
+                // പേര് എഴുതുന്നു (കടും ചുവപ്പ് നിറത്തിൽ)
                 ctx.fillStyle = TEXT_COLOR;
                 ctx.fillText(name, TEXT_START_X, TEXT_Y);
             }
 
-            // Update UI
             cropSection.classList.add('hidden');
             actionSection.classList.remove('hidden');
             defaultPreview.classList.add('hidden');
             resultPreview.classList.remove('hidden');
             previewTitle.innerText = "തയ്യാറാക്കിയ പോസ്റ്റർ";
-            // മൊബൈലിൽ റിസൾട്ട് കാണാൻ താഴേക്ക് സ്ക്രോൾ ചെയ്യിക്കുന്നു
             resultPreview.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Helper to draw rounded rectangle for text box
+        // Helper to draw rounded rectangle (കൂടുതൽ റൗണ്ടഡ് ആയി അപ്‌ഡേറ്റ് ചെയ്തു)
         function drawRoundedRect(ctx, x, y, width, height, radius, color) {
             ctx.beginPath();
             ctx.moveTo(x + radius, y);
@@ -251,11 +236,23 @@
             ctx.lineTo(x, y + radius);
             ctx.quadraticCurveTo(x, y, x + radius, y);
             ctx.closePath();
+            
+            // ബോക്സിന് ചെറിയൊരു ഷാഡോ നൽകുന്നു (കൂടുതൽ 3D ലുക്ക് കിട്ടാൻ)
+            ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+            ctx.shadowBlur = 8;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 4;
+            
             ctx.fillStyle = color;
             ctx.fill();
+            
+            // ഷാഡോ റീസെറ്റ് ചെയ്യുന്നു (അല്ലെങ്കിൽ അക്ഷരങ്ങൾക്കും ഷാഡോ വരും)
+            ctx.shadowColor = "transparent";
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
         }
 
-        // Download Action
         downloadBtn.addEventListener('click', function () {
             const link = document.createElement('a');
             link.download = 'Madrasa_Admission_Poster.jpg';
@@ -263,7 +260,6 @@
             link.click();
         });
 
-        // Reset Action
         resetBtn.addEventListener('click', resetUI);
 
         function resetUI() {
