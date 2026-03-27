@@ -1,102 +1,155 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>മദ്‌റസ അഡ്മിഷൻ പോസ്റ്റർ</title>
+    <title>Admission Poster Generator</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Cropper.css for Image Cropping -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <!-- Google Fonts for Malayalam -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Poppins (English), Noto Sans Malayalam, Noto Kufi Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@700&family=Noto+Sans+Malayalam:wght@700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans Malayalam', sans-serif; background-color: #f3f4f6; }
-        #canvas-container { max-width: 100%; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        canvas { max-width: 100%; height: auto; }
-        .cropper-container { max-height: 60vh; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #f8fafc; 
+        }
+        .canvas-container { 
+            max-width: 100%; 
+            overflow: hidden; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
+        }
+        canvas { max-width: 100%; height: auto; display: block; }
+        .cropper-container { max-height: 50vh; }
+        
+        /* Loading overlay */
+        #loader { display: none; }
+        .loading #loader { display: flex; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body class="min-h-screen p-4 md:p-8 flex items-center justify-center">
 
-    <div class="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
-        <h2 class="text-2xl font-bold text-center text-red-800 mb-6">അഡ്മിഷൻ പോസ്റ്റർ തയ്യാറാക്കുക</h2>
-
-        <!-- Input Section -->
-        <div id="input-section" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">വിദ്യാർത്ഥിയുടെ പേര്</label>
-                <input type="text" id="studentName" placeholder="പേര് മലയാളത്തിൽ നൽകുക" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500">
+    <div class="max-w-5xl w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+        
+        <!-- Left Column: Preview / Result -->
+        <div class="w-full md:w-1/2 bg-gray-50 p-6 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-200">
+            <h3 class="text-sm uppercase tracking-wider text-gray-500 font-semibold mb-4 text-center" id="previewTitle">Poster Preview</h3>
+            
+            <!-- Default Template Preview -->
+            <div id="defaultPreview" class="canvas-container bg-white border border-gray-200">
+                <img src="template.png" alt="Template Preview" id="templateImg" class="w-full h-auto object-cover" onerror="this.src='https://via.placeholder.com/1080x1080.png?text=Template.png+Missing'">
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">ഫോട്ടോ തിരഞ്ഞെടുക്കുക</label>
-                <input type="file" id="imageInput" accept="image/png, image/jpeg" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer">
-            </div>
-        </div>
-
-        <!-- Crop Section (Hidden initially) -->
-        <div id="crop-section" class="hidden mt-4 space-y-4">
-            <h3 class="text-sm font-medium text-gray-700">ഫോട്ടോ ക്രോപ്പ് ചെയ്യുക:</h3>
-            <div class="cropper-container bg-gray-100 rounded-lg overflow-hidden">
-                <img id="imageToCrop" src="" alt="Crop preview" class="max-w-full">
-            </div>
-            <button id="cropBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
-                സേവ് ചെയ്യുക (Crop & Generate)
-            </button>
-        </div>
-
-        <!-- Result Section -->
-        <div id="result-section" class="mt-6 hidden space-y-4">
-            <h3 class="text-sm font-medium text-gray-700 text-center">നിങ്ങളുടെ പോസ്റ്റർ:</h3>
-            <div id="canvas-container" class="border bg-gray-50">
-                <!-- Canvas where the magic happens -->
+            <!-- Canvas Result (Hidden initially) -->
+            <div id="resultPreview" class="canvas-container hidden bg-white border border-gray-200">
                 <canvas id="posterCanvas" width="1080" height="1080"></canvas>
             </div>
-            <button id="downloadBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg flex justify-center items-center gap-2 transition duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-                ഡൗൺലോഡ് ചെയ്യുക
-            </button>
-            <button id="resetBtn" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-200">
-                പുതിയത് തയ്യാറാക്കുക
-            </button>
+        </div>
+
+        <!-- Right Column: Form Controls -->
+        <div class="w-full md:w-1/2 p-6 md:p-8 flex flex-col">
+            <div class="mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-red-800 mb-2">Create Your Poster</h2>
+                <p class="text-gray-500 text-sm">Upload your photo and enter your name to generate the admission poster.</p>
+            </div>
+
+            <!-- Input Section -->
+            <div id="input-section" class="flex-1 space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Student Name</label>
+                    <input type="text" id="studentName" placeholder="Enter name (English, Malayalam, or Arabic)" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Upload Photo</label>
+                    <div class="flex items-center justify-center w-full">
+                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-8 h-8 mb-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                </svg>
+                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                <p class="text-xs text-gray-500">PNG or JPG (Max. 5MB)</p>
+                            </div>
+                            <input type="file" id="imageInput" accept="image/png, image/jpeg" class="hidden" />
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crop Section (Hidden initially) -->
+            <div id="crop-section" class="hidden flex-1 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-sm font-semibold text-gray-700">Adjust Your Photo</h3>
+                    <button id="cancelCropBtn" class="text-xs text-red-600 font-semibold hover:text-red-800">Cancel</button>
+                </div>
+                <div class="cropper-container bg-black rounded-xl overflow-hidden">
+                    <img id="imageToCrop" src="" alt="Crop preview" class="max-w-full">
+                </div>
+                <button id="generateBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-200 shadow-md flex justify-center items-center gap-2">
+                    Generate Poster
+                </button>
+            </div>
+
+            <!-- Action Buttons (Visible after generation) -->
+            <div id="action-section" class="hidden mt-auto pt-6 space-y-3">
+                <button id="downloadBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl flex justify-center items-center gap-2 transition duration-200 shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Download Poster
+                </button>
+                <button id="resetBtn" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition duration-200">
+                    Create Another
+                </button>
+            </div>
+
         </div>
     </div>
 
     <!-- Cropper.js Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
-        // Elements
+        // DOM Elements
         const imageInput = document.getElementById('imageInput');
         const studentNameInput = document.getElementById('studentName');
+        
+        const inputSection = document.getElementById('input-section');
         const cropSection = document.getElementById('crop-section');
+        const actionSection = document.getElementById('action-section');
+        
+        const defaultPreview = document.getElementById('defaultPreview');
+        const resultPreview = document.getElementById('resultPreview');
+        const previewTitle = document.getElementById('previewTitle');
+        
         const imageToCrop = document.getElementById('imageToCrop');
-        const cropBtn = document.getElementById('cropBtn');
-        const resultSection = document.getElementById('result-section');
-        const canvas = document.getElementById('posterCanvas');
-        const ctx = canvas.getContext('2d');
+        const generateBtn = document.getElementById('generateBtn');
+        const cancelCropBtn = document.getElementById('cancelCropBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const resetBtn = document.getElementById('resetBtn');
-        const inputSection = document.getElementById('input-section');
+        
+        const canvas = document.getElementById('posterCanvas');
+        const ctx = canvas.getContext('2d');
 
         let cropper;
         let templateImage = new Image();
         
-        // IMPORTANT: നിങ്ങൾ തയ്യാറാക്കിയ template.png ഇമേജിന്റെ URL ഇവിടെ നൽകണം. 
-        // GitHub-ലേക്ക് push ചെയ്യുമ്പോൾ index.html ഉള്ള അതേ ഫോൾഡറിൽ template.png വെക്കുക.
+        // IMPORTANT: The transparent PNG template file name
         templateImage.src = 'template.png'; 
 
-        // കോർഡിനേറ്റുകൾ (ഇവ നിങ്ങളുടെ ടെംപ്ലേറ്റിലെ വട്ടത്തിന് അനുസരിച്ച് മാറ്റേണ്ടി വരും)
-        // ഇത് ഒരു അനുമാനമാണ്. ടെസ്റ്റ് ചെയ്ത ശേഷം ഈ നമ്പറുകൾ മാറ്റി കൊടുക്കുക.
-        const PHOTO_X = 480;      // ഫോട്ടോ തുടങ്ങേണ്ട X കോർഡിനേറ്റ് (ഇടത് നിന്ന്)
-        const PHOTO_Y = 120;      // ഫോട്ടോ തുടങ്ങേണ്ട Y കോർഡിനേറ്റ് (മുകളിൽ നിന്ന്)
-        const PHOTO_WIDTH = 550;  // ഫോട്ടോയുടെ വീതി
-        const PHOTO_HEIGHT = 550; // ഫോട്ടോയുടെ ഉയരം
+        // --- POSITION COORDINATES ---
+        // പുതിയ ഇമേജിന് (20260327_142244.jpg) അനുസരിച്ചുള്ള ഏകദേശ അളവുകൾ. 
+        // വട്ടം കൃത്യമല്ലെങ്കിൽ ഈ നമ്പറുകൾ മാറ്റുക.
+        const PHOTO_X = 460;      // ഫോട്ടോ തുടങ്ങേണ്ട X കോർഡിനേറ്റ് (വലതുവശത്തേക്ക് നീങ്ങി)
+        const PHOTO_Y = 120;      // ഫോട്ടോ തുടങ്ങേണ്ട Y കോർഡിനേറ്റ്
+        const PHOTO_WIDTH = 610;  // ഫോട്ടോയുടെ വീതി (വലുതാക്കി)
+        const PHOTO_HEIGHT = 610; // ഫോട്ടോയുടെ ഉയരം
 
-        const TEXT_X = 540;       // പേര് വരേണ്ട X കോർഡിനേറ്റ് (മധ്യഭാഗം)
-        const TEXT_Y = 950;       // പേര് വരേണ്ട Y കോർഡിനേറ്റ് (താഴെ)
+        // പേര് വരേണ്ട സ്ഥലം (ഇടതുവശത്ത് താഴെ)
+        const TEXT_X = 270;       
+        const TEXT_Y = 820;       
 
         // Handle Image Upload
         imageInput.addEventListener('change', function (e) {
@@ -107,94 +160,132 @@
                 
                 reader.onload = function (event) {
                     imageToCrop.src = event.target.result;
+                    
+                    // Toggle UI
                     inputSection.classList.add('hidden');
                     cropSection.classList.remove('hidden');
                     
                     if (cropper) {
                         cropper.destroy();
                     }
-                    // Initialize Cropper (1:1 Aspect ratio for circle)
+                    
+                    // Initialize Cropper (1:1 Aspect ratio for perfect circle mapping)
                     cropper = new Cropper(imageToCrop, {
                         aspectRatio: 1,
                         viewMode: 1,
+                        dragMode: 'move',
+                        background: false
                     });
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Crop and Generate Poster
-        cropBtn.addEventListener('click', function () {
+        // Cancel Crop
+        cancelCropBtn.addEventListener('click', function() {
+            cropSection.classList.add('hidden');
+            inputSection.classList.remove('hidden');
+            imageInput.value = '';
+            if(cropper) cropper.destroy();
+        });
+
+        // Helper function to detect Arabic characters
+        function containsArabic(text) {
+            const arabicRegex = /[\u0600-\u06FF]/;
+            return arabicRegex.test(text);
+        }
+
+        // Generate Poster
+        generateBtn.addEventListener('click', function () {
             if (!cropper) return;
 
             const name = studentNameInput.value.trim();
+            
+            // Get cropped image data
             const croppedCanvas = cropper.getCroppedCanvas({
                 width: PHOTO_WIDTH,
                 height: PHOTO_HEIGHT
             });
 
-            generatePoster(croppedCanvas, name);
+            generateCanvasImage(croppedCanvas, name);
         });
 
-        function generatePoster(userImageCanvas, name) {
-            // Clear previous drawing
+        function generateCanvasImage(userImageCanvas, name) {
+            // 1. Clear Canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Draw User Photo FIRST (So it stays behind the template)
+            // 2. Draw User Photo FIRST (Behind the template)
             ctx.drawImage(userImageCanvas, PHOTO_X, PHOTO_Y, PHOTO_WIDTH, PHOTO_HEIGHT);
 
-            // 2. Draw Template Image OVER the photo
+            // 3. Draw Template Image OVER the photo (Template MUST have a transparent hole)
             ctx.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
 
-            // 3. Draw Student Name
+            // 4. Draw Student Name
             if (name) {
-                ctx.font = "bold 45px 'Noto Sans Malayalam', sans-serif";
-                ctx.fillStyle = "#ffffff"; // നിറം മാറ്റാം (ഉദാഹരണത്തിന് #000000 കറുപ്പിന്)
+                const isArabic = containsArabic(name);
+                
+                // Multi-language Font Stack
+                // If it's Arabic, 'Noto Kufi Arabic' is applied. Otherwise 'Noto Sans Malayalam' or 'Poppins'
+                ctx.font = "bold 42px 'Noto Kufi Arabic', 'Noto Sans Malayalam', 'Poppins', sans-serif";
+                
+                // Set text color to match the design (e.g., the red color from the template, or standard black/white)
+                ctx.fillStyle = "#a81628"; // Red color matching the theme
                 ctx.textAlign = "center";
                 
-                // പേരിന് ചുറ്റും ചെറിയൊരു ഷാഡോ നൽകാൻ (വ്യക്തതയ്ക്ക്)
-                ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
-                ctx.shadowBlur = 5;
-                ctx.shadowOffsetX = 2;
-                ctx.shadowOffsetY = 2;
+                // Handle RTL direction for Arabic text
+                if (isArabic) {
+                    ctx.direction = "rtl";
+                } else {
+                    ctx.direction = "ltr";
+                }
+
+                // Add text with slight shadow for better readability
+                ctx.shadowColor = "rgba(255, 255, 255, 0.8)";
+                ctx.shadowBlur = 4;
+                ctx.shadowOffsetX = 1;
+                ctx.shadowOffsetY = 1;
 
                 ctx.fillText(name, TEXT_X, TEXT_Y);
                 
-                // Reset shadow
+                // Reset shadow and direction
                 ctx.shadowBlur = 0;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 0;
+                ctx.direction = "ltr";
             }
 
-            // Show Result
+            // Update UI to show result
             cropSection.classList.add('hidden');
-            resultSection.classList.remove('hidden');
+            actionSection.classList.remove('hidden');
+            
+            defaultPreview.classList.add('hidden');
+            resultPreview.classList.remove('hidden');
+            previewTitle.innerText = "Your Generated Poster";
         }
 
-        // Handle Download
+        // Download Action
         downloadBtn.addEventListener('click', function () {
             const link = document.createElement('a');
-            link.download = 'madrasa_admission_poster.jpg';
-            // Convert to JPEG for smaller file size
-            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.download = 'Admission_Poster_2026.jpg';
+            // Export as high quality JPEG
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
         });
 
-        // Handle Reset
+        // Reset Action
         resetBtn.addEventListener('click', function() {
-            resultSection.classList.add('hidden');
+            // Reset UI
+            actionSection.classList.add('hidden');
             inputSection.classList.remove('hidden');
+            
+            resultPreview.classList.add('hidden');
+            defaultPreview.classList.remove('hidden');
+            previewTitle.innerText = "Poster Preview";
+            
+            // Clear inputs
+            studentNameInput.value = '';
             imageInput.value = '';
-            if(cropper) { cropper.destroy(); }
+            if(cropper) cropper.destroy();
         });
 
-        // Ensure template is loaded
-        templateImage.onload = function() {
-            console.log("Template loaded successfully");
-        }
-        templateImage.onerror = function() {
-            alert("Error: template.png കാണാൻ സാധിക്കുന്നില്ല. ദയവായി ഇമേജ് ഫോൾഡറിൽ ഉണ്ടെന്ന് ഉറപ്പുവരുത്തുക.");
-        }
     </script>
 </body>
 </html>
