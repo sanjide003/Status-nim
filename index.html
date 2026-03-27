@@ -128,28 +128,27 @@
         // ⚙️ കോൺഫിഗറേഷൻ (Coordinates & Settings)
         // =========================================================================
         
-        // 1. ഫോട്ടോയുടെ സ്ഥാനം (കൂടുതൽ വലത്തോട്ട് നീക്കി)
-        const PHOTO_X = 460;      // 430-ൽ നിന്നും 460 ആയി വർദ്ധിപ്പിച്ചു
-        const PHOTO_Y = 170;      
-        const PHOTO_WIDTH = 680;  
-        const PHOTO_HEIGHT = 680; 
+        // 1. ഫോട്ടോയുടെ സ്ഥാനം (വലുപ്പം കൂട്ടി, വലത്തോട്ട് നീക്കി)
+        const PHOTO_X = 480;      // വലത്തോട്ട് നീക്കി
+        const PHOTO_Y = 150;      // മുകളിലേക്ക് അല്പം കയറ്റി (വലുപ്പം കൂട്ടിയതുകൊണ്ട്)
+        const PHOTO_WIDTH = 720;  // വലിപ്പം വർദ്ധിപ്പിച്ചു
+        const PHOTO_HEIGHT = 720; // വലിപ്പം വർദ്ധിപ്പിച്ചു
 
-        // 2. പേരിന്റെ സ്ഥാനം 
-        const TEXT_START_X = 60; // ഇടത് മാർജിൻ അല്പം കൂട്ടി
-        const TEXT_Y = 830;      
+        // 2. പേരിന്റെ സ്ഥാനം (സെൻ്റർ പോയിൻ്റ്)
+        const TEXT_CENTER_X = 280; // ബോക്സിന്റെ കൃത്യം നടുവിലുള്ള പോയിൻ്റ് (X)
+        const TEXT_Y = 820;        // താഴെ നിന്നുള്ള ഉയരം (Y)
         
         // 3. ഫോണ്ട് സെറ്റിംഗ്സ്
         const FONT_SIZE = 48;
         const FONT_FAMILY = "'Noto Kufi Arabic', 'Noto Sans Malayalam', 'Poppins', sans-serif";
-        const TEXT_COLOR = "#8B0000"; // കടും ചുവപ്പ് (Dark Red) നിറം
+        const TEXT_COLOR = "#8B0000"; // കടും ചുവപ്പ് (Dark Red)
 
         // 4. പേരിന് പിന്നിലെ ബോക്സ് സെറ്റിംഗ്സ് (അപ്‌ഡേറ്റ് ചെയ്തത്)
-        const BOX_PADDING_X = 40; // ബോക്സിന്റെ വീതി അല്പം കൂട്ടി
-        const BOX_HEIGHT = 100;    // ബോക്സിന്റെ ഉയരം അല്പം കൂട്ടി
-        const BOX_COLOR = "#FDD835"; // ഡിസൈനിലെ മഞ്ഞ (Yellow/Gold) നിറം
-        const BOX_RADIUS = 50;       // കൂടുതൽ റൗണ്ടഡ് കോർണറുകൾ (Pill shape)
+        const BOX_PADDING_X = 40; 
+        const BOX_HEIGHT = 90;    
+        const BOX_COLOR = "rgba(253, 216, 53, 0.75)"; // 75% ഒപ്പാസിറ്റിയുള്ള മഞ്ഞ നിറം
+        const BOX_RADIUS = 30;       // റൗണ്ടഡ് കോർണറുകൾ
         // =========================================================================
-
 
         imageInput.addEventListener('change', function (e) {
             const files = e.target.files;
@@ -197,22 +196,24 @@
             // പേരും ബോക്സും വരയ്ക്കുന്നു
             if (name) {
                 ctx.font = `bold ${FONT_SIZE}px ${FONT_FAMILY}`;
-                ctx.textAlign = "left"; 
+                ctx.textAlign = "center"; // ⚠️ സെൻ്റർ അലൈൻമെൻ്റ് ആക്കി
                 ctx.textBaseline = "middle";
 
+                // ടെക്സ്റ്റിന്റെ വീതി അളക്കുന്നു
                 const textMetrics = ctx.measureText(name);
                 const textWidth = textMetrics.width;
 
-                const boxX = TEXT_START_X - BOX_PADDING_X;
-                const boxY = TEXT_Y - (BOX_HEIGHT / 2);
+                // ബോക്സിന്റെ വീതിയും തുടങ്ങേണ്ട സ്ഥലവും (X) കണക്കാക്കുന്നു
                 const boxWidth = textWidth + (BOX_PADDING_X * 2);
+                const boxX = TEXT_CENTER_X - (boxWidth / 2); // കൃത്യം നടുവിൽ വരാൻ
+                const boxY = TEXT_Y - (BOX_HEIGHT / 2);
 
-                // റൗണ്ടഡ് ബോക്സ് വരയ്ക്കുന്നു (മഞ്ഞ നിറത്തിൽ)
+                // റൗണ്ടഡ് ബോക്സ് വരയ്ക്കുന്നു (സുതാര്യതയുള്ള മഞ്ഞ നിറത്തിൽ)
                 drawRoundedRect(ctx, boxX, boxY, boxWidth, BOX_HEIGHT, BOX_RADIUS, BOX_COLOR);
 
-                // പേര് എഴുതുന്നു (കടും ചുവപ്പ് നിറത്തിൽ)
+                // പേര് എഴുതുന്നു (സെൻ്റർ അലൈൻ ആയതിനാൽ TEXT_CENTER_X ൽ തന്നെ നൽകുന്നു)
                 ctx.fillStyle = TEXT_COLOR;
-                ctx.fillText(name, TEXT_START_X, TEXT_Y);
+                ctx.fillText(name, TEXT_CENTER_X, TEXT_Y);
             }
 
             cropSection.classList.add('hidden');
@@ -223,7 +224,7 @@
             resultPreview.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Helper to draw rounded rectangle (കൂടുതൽ റൗണ്ടഡ് ആയി അപ്‌ഡേറ്റ് ചെയ്തു)
+        // Helper to draw rounded rectangle 
         function drawRoundedRect(ctx, x, y, width, height, radius, color) {
             ctx.beginPath();
             ctx.moveTo(x + radius, y);
@@ -237,8 +238,7 @@
             ctx.quadraticCurveTo(x, y, x + radius, y);
             ctx.closePath();
             
-            // ബോക്സിന് ചെറിയൊരു ഷാഡോ നൽകുന്നു (കൂടുതൽ 3D ലുക്ക് കിട്ടാൻ)
-            ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+            ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
             ctx.shadowBlur = 8;
             ctx.shadowOffsetX = 2;
             ctx.shadowOffsetY = 4;
@@ -246,7 +246,6 @@
             ctx.fillStyle = color;
             ctx.fill();
             
-            // ഷാഡോ റീസെറ്റ് ചെയ്യുന്നു (അല്ലെങ്കിൽ അക്ഷരങ്ങൾക്കും ഷാഡോ വരും)
             ctx.shadowColor = "transparent";
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
