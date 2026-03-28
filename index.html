@@ -3,100 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>അഡ്മിഷൻ പോസ്റ്റർ മേക്കർ</title>
+    <title>മിഹ്റജാനുൽ ബിദായ 2026 - നൂറുൽ ഇസ്ലാം ഹയർ സെക്കൻഡറി മദ്‌റസ</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Cropper.css -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <!-- Google Fonts: Noto Sans Malayalam, Noto Kufi Arabic, Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@700&family=Noto+Sans+Malayalam:wght@700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@700&family=Noto+Sans+Malayalam:wght@700;900&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <style>
         body { 
             font-family: 'Noto Sans Malayalam', 'Poppins', sans-serif; 
-            background-color: #f0f2f5; 
+            background-color: #f3f4f6; 
         }
         .canvas-container { 
             width: 100%;
-            max-width: 500px; 
             margin: 0 auto;
             overflow: hidden; 
             border-radius: 12px; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
         }
         canvas { width: 100%; height: auto; display: block; }
         .cropper-container { max-height: 50vh; }
     </style>
 </head>
-<body class="min-h-screen p-4 flex items-center justify-center">
+<body class="min-h-screen p-4 md:p-8 flex items-center justify-center">
 
-    <div class="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+    <div class="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
         
-        <!-- Section 1: Form Controls -->
-        <div class="w-full md:w-1/2 p-6 md:p-8 flex flex-col border-b md:border-b-0 md:border-r border-gray-200 order-1">
-            <div class="mb-6">
-                <h2 class="text-2xl font-bold text-red-800 mb-2">പോസ്റ്റർ തയ്യാറാക്കാം</h2>
-                <p class="text-gray-600 text-sm">താഴെ പേര് നൽകി ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക.</p>
-            </div>
-
-            <!-- Input Section -->
-            <div id="input-section" class="flex-1 space-y-5">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">വിദ്യാർത്ഥിയുടെ പേര് *</label>
-                    <input type="text" id="studentName" placeholder="പേര് മലയാളത്തിലോ ഇംഗ്ലീഷിലോ നൽകുക" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">ഫോട്ടോ തിരഞ്ഞെടുക്കുക *</label>
-                    <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-red-50 transition">
-                        <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-2 text-gray-400">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                            </svg>
-                            <p class="text-sm text-gray-600">ക്ലിക്ക് ചെയ്ത് ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക</p>
-                        </div>
-                        <input type="file" id="imageInput" accept="image/png, image/jpeg" class="hidden" />
-                    </label>
-                </div>
-            </div>
-
-            <!-- Crop Section -->
-            <div id="crop-section" class="hidden flex-1 space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-sm font-bold text-gray-700">ഫോട്ടോ ക്രമീകരിക്കുക</h3>
-                    <button id="cancelCropBtn" class="text-sm text-red-600 hover:text-red-800">റദ്ദാക്കുക</button>
-                </div>
-                <div class="cropper-container bg-black rounded-xl overflow-hidden">
-                    <img id="imageToCrop" src="" alt="Crop preview" class="max-w-full">
-                </div>
-                <button id="generateBtn" class="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-3 px-4 rounded-xl transition shadow-md">
-                    പോസ്റ്റർ തയ്യാറാക്കുക
-                </button>
-            </div>
-
-            <!-- Action Buttons -->
-            <div id="action-section" class="hidden mt-auto pt-6 space-y-3">
-                <button id="downloadBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl flex justify-center items-center gap-2 transition shadow-md">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                    </svg>
-                    ഡൗൺലോഡ് ചെയ്യുക
-                </button>
-                <button id="resetBtn" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-xl transition">
-                    പുതിയത് ചെയ്യുക
-                </button>
+        <!-- 🌟 Professional Header Section -->
+        <div class="bg-gradient-to-r from-red-900 to-red-700 p-6 md:p-8 text-white text-center">
+            <h1 class="text-2xl md:text-3xl font-black mb-1 drop-shadow-md">നൂറുൽ ഇസ്ലാം ഹയർ സെക്കൻഡറി മദ്‌റസ</h1>
+            <p class="text-sm md:text-base opacity-90 font-medium tracking-wide">ദേവതിയാൽ (Reg. No: 4883)</p>
+            <div class="mt-4 inline-block bg-yellow-400 text-red-900 px-6 py-2 rounded-full font-bold text-lg md:text-xl shadow-lg border-2 border-yellow-300">
+                മിഹ്റജാനുൽ ബിദായ 2026
             </div>
         </div>
 
-        <!-- Section 2: Preview / Result -->
-        <div class="w-full md:w-1/2 bg-gray-50 p-6 flex flex-col items-center justify-center order-2">
-            <h3 class="text-sm uppercase tracking-wider text-gray-500 font-bold mb-4 text-center" id="previewTitle">പ്രിവ്യൂ</h3>
+        <!-- 🛠️ Workspace (Form & Default Preview) - Hidden after generation -->
+        <div id="workspace" class="flex flex-col md:flex-row w-full">
             
-            <div id="defaultPreview" class="canvas-container bg-white border border-gray-200">
-                <img src="template.png" alt="Template Preview" id="templateImg" class="w-full h-auto" onerror="this.src='https://via.placeholder.com/1080x1080.png?text=Template+Not+Found'">
+            <!-- Form Section -->
+            <div class="w-full md:w-1/2 p-6 md:p-8 flex flex-col border-b md:border-b-0 md:border-r border-gray-100 order-1">
+                <div class="mb-6">
+                    <p class="text-gray-600 text-sm font-medium">വിദ്യാർത്ഥിയുടെ അഡ്മിഷൻ പോസ്റ്റർ തയ്യാറാക്കാൻ താഴെ വിവരങ്ങൾ നൽകുക.</p>
+                </div>
+
+                <!-- Input Section -->
+                <div id="input-section" class="flex-1 space-y-6">
+                    <div>
+                        <!-- ലേബൽ ചെറുതാക്കി -->
+                        <label class="block text-sm font-bold text-gray-700 mb-2">പേര് *</label>
+                        <input type="text" id="studentName" placeholder="മലയാളത്തിലോ ഇംഗ്ലീഷിലോ നൽകുക" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition shadow-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">ഫോട്ടോ *</label>
+                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-blue-50 hover:border-blue-300 transition shadow-sm">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-2 text-blue-500">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                                </svg>
+                                <p class="text-sm text-gray-600 font-medium">ക്ലിക്ക് ചെയ്ത് ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക</p>
+                            </div>
+                            <input type="file" id="imageInput" accept="image/png, image/jpeg" class="hidden" />
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Crop Section -->
+                <div id="crop-section" class="hidden flex-1 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-bold text-gray-700">ഫോട്ടോ ക്രമീകരിക്കുക</h3>
+                        <button id="cancelCropBtn" class="text-sm text-red-600 hover:text-red-800 font-medium">റദ്ദാക്കുക</button>
+                    </div>
+                    <div class="cropper-container bg-black rounded-xl overflow-hidden shadow-inner">
+                        <img id="imageToCrop" src="" alt="Crop preview" class="max-w-full">
+                    </div>
+                    <!-- ബട്ടൺ നീല നിറത്തിലേക്ക് മാറ്റി -->
+                    <button id="generateBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-lg text-lg">
+                        പോസ്റ്റർ തയ്യാറാക്കുക
+                    </button>
+                </div>
             </div>
 
-            <div id="resultPreview" class="canvas-container hidden bg-white border border-gray-200">
+            <!-- Default Preview Section -->
+            <div class="w-full md:w-1/2 bg-gray-50 p-6 md:p-8 flex flex-col items-center justify-center order-2">
+                <h3 class="text-xs uppercase tracking-wider text-gray-400 font-bold mb-4 text-center">പോസ്റ്റർ പ്രിവ്യൂ</h3>
+                <div class="canvas-container bg-white border border-gray-200 max-w-sm">
+                    <img src="template.png" alt="Template Preview" id="templateImg" class="w-full h-auto" onerror="this.src='https://via.placeholder.com/1080x1080.png?text=Template+Not+Found'">
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- 🎉 Result View (Shown only after generation) -->
+        <div id="result-view" class="hidden flex-col items-center justify-center p-6 md:p-8 w-full bg-gray-50">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">നിങ്ങളുടെ പോസ്റ്റർ തയ്യാറാണ്!</h2>
+            
+            <!-- Canvas Container (Top) -->
+            <div class="canvas-container bg-white border border-gray-200 mb-8 max-w-md w-full">
                 <canvas id="posterCanvas" width="1080" height="1080"></canvas>
+            </div>
+
+            <!-- Action Buttons (Bottom) -->
+            <div class="w-full max-w-md space-y-3">
+                <button id="downloadBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-xl flex justify-center items-center gap-2 transition shadow-lg text-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                    ഡൗൺലോഡ് ചെയ്യുക
+                </button>
+                <button id="resetBtn" class="w-full bg-white border-2 border-gray-200 hover:bg-gray-100 text-gray-700 font-bold py-3 px-4 rounded-xl transition shadow-sm">
+                    പുതിയത് തയ്യാറാക്കുക
+                </button>
             </div>
         </div>
 
@@ -108,15 +127,15 @@
         const studentNameInput = document.getElementById('studentName');
         const inputSection = document.getElementById('input-section');
         const cropSection = document.getElementById('crop-section');
-        const actionSection = document.getElementById('action-section');
-        const defaultPreview = document.getElementById('defaultPreview');
-        const resultPreview = document.getElementById('resultPreview');
-        const previewTitle = document.getElementById('previewTitle');
+        const workspace = document.getElementById('workspace');
+        const resultView = document.getElementById('result-view');
+        
         const imageToCrop = document.getElementById('imageToCrop');
         const generateBtn = document.getElementById('generateBtn');
         const cancelCropBtn = document.getElementById('cancelCropBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const resetBtn = document.getElementById('resetBtn');
+        
         const canvas = document.getElementById('posterCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -127,27 +146,22 @@
         // =========================================================================
         // ⚙️ കോൺഫിഗറേഷൻ (Coordinates & Settings)
         // =========================================================================
-        
-        // 1. ഫോട്ടോയുടെ സ്ഥാനം (വലുപ്പം കൂട്ടി, വലത്തോട്ട് നീക്കി)
-        const PHOTO_X = 480;      // വലത്തോട്ട് നീക്കി
-        const PHOTO_Y = 150;      // മുകളിലേക്ക് അല്പം കയറ്റി (വലുപ്പം കൂട്ടിയതുകൊണ്ട്)
-        const PHOTO_WIDTH = 720;  // വലിപ്പം വർദ്ധിപ്പിച്ചു
-        const PHOTO_HEIGHT = 720; // വലിപ്പം വർദ്ധിപ്പിച്ചു
+        const PHOTO_X = 480;      
+        const PHOTO_Y = 150;      
+        const PHOTO_WIDTH = 720;  
+        const PHOTO_HEIGHT = 720; 
 
-        // 2. പേരിന്റെ സ്ഥാനം (സെൻ്റർ പോയിൻ്റ്)
-        const TEXT_CENTER_X = 280; // ബോക്സിന്റെ കൃത്യം നടുവിലുള്ള പോയിൻ്റ് (X)
-        const TEXT_Y = 820;        // താഴെ നിന്നുള്ള ഉയരം (Y)
+        const TEXT_CENTER_X = 280; 
+        const TEXT_Y = 820;        
         
-        // 3. ഫോണ്ട് സെറ്റിംഗ്സ്
         const FONT_SIZE = 48;
         const FONT_FAMILY = "'Noto Kufi Arabic', 'Noto Sans Malayalam', 'Poppins', sans-serif";
-        const TEXT_COLOR = "#8B0000"; // കടും ചുവപ്പ് (Dark Red)
+        const TEXT_COLOR = "#8B0000"; 
 
-        // 4. പേരിന് പിന്നിലെ ബോക്സ് സെറ്റിംഗ്സ് (അപ്‌ഡേറ്റ് ചെയ്തത്)
         const BOX_PADDING_X = 40; 
         const BOX_HEIGHT = 90;    
-        const BOX_COLOR = "rgba(253, 216, 53, 0.75)"; // 75% ഒപ്പാസിറ്റിയുള്ള മഞ്ഞ നിറം
-        const BOX_RADIUS = 30;       // റൗണ്ടഡ് കോർണറുകൾ
+        const BOX_COLOR = "rgba(253, 216, 53, 0.75)"; 
+        const BOX_RADIUS = 30;       
         // =========================================================================
 
         imageInput.addEventListener('change', function (e) {
@@ -196,32 +210,29 @@
             // പേരും ബോക്സും വരയ്ക്കുന്നു
             if (name) {
                 ctx.font = `bold ${FONT_SIZE}px ${FONT_FAMILY}`;
-                ctx.textAlign = "center"; // ⚠️ സെൻ്റർ അലൈൻമെൻ്റ് ആക്കി
+                ctx.textAlign = "center"; 
                 ctx.textBaseline = "middle";
 
-                // ടെക്സ്റ്റിന്റെ വീതി അളക്കുന്നു
                 const textMetrics = ctx.measureText(name);
                 const textWidth = textMetrics.width;
 
-                // ബോക്സിന്റെ വീതിയും തുടങ്ങേണ്ട സ്ഥലവും (X) കണക്കാക്കുന്നു
                 const boxWidth = textWidth + (BOX_PADDING_X * 2);
-                const boxX = TEXT_CENTER_X - (boxWidth / 2); // കൃത്യം നടുവിൽ വരാൻ
+                const boxX = TEXT_CENTER_X - (boxWidth / 2); 
                 const boxY = TEXT_Y - (BOX_HEIGHT / 2);
 
-                // റൗണ്ടഡ് ബോക്സ് വരയ്ക്കുന്നു (സുതാര്യതയുള്ള മഞ്ഞ നിറത്തിൽ)
                 drawRoundedRect(ctx, boxX, boxY, boxWidth, BOX_HEIGHT, BOX_RADIUS, BOX_COLOR);
 
-                // പേര് എഴുതുന്നു (സെൻ്റർ അലൈൻ ആയതിനാൽ TEXT_CENTER_X ൽ തന്നെ നൽകുന്നു)
                 ctx.fillStyle = TEXT_COLOR;
                 ctx.fillText(name, TEXT_CENTER_X, TEXT_Y);
             }
 
-            cropSection.classList.add('hidden');
-            actionSection.classList.remove('hidden');
-            defaultPreview.classList.add('hidden');
-            resultPreview.classList.remove('hidden');
-            previewTitle.innerText = "തയ്യാറാക്കിയ പോസ്റ്റർ";
-            resultPreview.scrollIntoView({ behavior: 'smooth' });
+            // Layout Update: Hide Workspace, Show Result View
+            workspace.classList.add('hidden');
+            resultView.classList.remove('hidden');
+            resultView.classList.add('flex'); // Enable flex layout for result view
+            
+            // Scroll to top to see the poster
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // Helper to draw rounded rectangle 
@@ -254,7 +265,8 @@
 
         downloadBtn.addEventListener('click', function () {
             const link = document.createElement('a');
-            link.download = 'Madrasa_Admission_Poster.jpg';
+            const safeName = studentNameInput.value.trim().replace(/[^a-zA-Z0-9]/g, '_') || 'Student';
+            link.download = `Admission_Poster_${safeName}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
         });
@@ -262,16 +274,20 @@
         resetBtn.addEventListener('click', resetUI);
 
         function resetUI() {
-            actionSection.classList.add('hidden');
+            // Restore Layout: Hide Result View, Show Workspace
+            resultView.classList.add('hidden');
+            resultView.classList.remove('flex');
+            workspace.classList.remove('hidden');
+            
             cropSection.classList.add('hidden');
             inputSection.classList.remove('hidden');
-            resultPreview.classList.add('hidden');
-            defaultPreview.classList.remove('hidden');
-            previewTitle.innerText = "പ്രിവ്യൂ";
+            
             studentNameInput.value = '';
             imageInput.value = '';
             if(cropper) cropper.destroy();
             cropper = null;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
