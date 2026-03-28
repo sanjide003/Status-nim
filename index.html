@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <!-- 🛠️ Workspace (Form & Default Preview) - Hidden after generation -->
+        <!-- 🛠️ Workspace (Form & Default Preview) -->
         <div id="workspace" class="flex flex-col md:flex-row w-full">
             
             <!-- Form Section -->
@@ -51,7 +51,6 @@
                 <!-- Input Section -->
                 <div id="input-section" class="flex-1 space-y-6">
                     <div>
-                        <!-- ലേബൽ ചെറുതാക്കി -->
                         <label class="block text-sm font-bold text-gray-700 mb-2">പേര് *</label>
                         <input type="text" id="studentName" placeholder="മലയാളത്തിലോ ഇംഗ്ലീഷിലോ നൽകുക" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition shadow-sm">
                     </div>
@@ -79,7 +78,6 @@
                     <div class="cropper-container bg-black rounded-xl overflow-hidden shadow-inner">
                         <img id="imageToCrop" src="" alt="Crop preview" class="max-w-full">
                     </div>
-                    <!-- ബട്ടൺ നീല നിറത്തിലേക്ക് മാറ്റി -->
                     <button id="generateBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-lg text-lg">
                         പോസ്റ്റർ തയ്യാറാക്കുക
                     </button>
@@ -100,20 +98,32 @@
         <div id="result-view" class="hidden flex-col items-center justify-center p-6 md:p-8 w-full bg-gray-50">
             <h2 class="text-xl font-bold text-gray-800 mb-6">നിങ്ങളുടെ പോസ്റ്റർ തയ്യാറാണ്!</h2>
             
-            <!-- Canvas Container (Top) -->
+            <!-- Canvas Container -->
             <div class="canvas-container bg-white border border-gray-200 mb-8 max-w-md w-full">
                 <canvas id="posterCanvas" width="1080" height="1080"></canvas>
             </div>
 
-            <!-- Action Buttons (Bottom) -->
+            <!-- Action Buttons Container -->
             <div class="w-full max-w-md space-y-3">
-                <button id="downloadBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-xl flex justify-center items-center gap-2 transition shadow-lg text-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                    </svg>
-                    ഡൗൺലോഡ് ചെയ്യുക
-                </button>
-                <button id="resetBtn" class="w-full bg-white border-2 border-gray-200 hover:bg-gray-100 text-gray-700 font-bold py-3 px-4 rounded-xl transition shadow-sm">
+                
+                <!-- Share & Download Buttons (Side by Side) -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="downloadBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-xl flex justify-center items-center gap-2 transition shadow-lg text-sm md:text-base">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        ഡൗൺലോഡ്
+                    </button>
+                    
+                    <button id="shareBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl flex justify-center items-center gap-2 transition shadow-lg text-sm md:text-base">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                        </svg>
+                        ഷെയർ
+                    </button>
+                </div>
+
+                <button id="resetBtn" class="w-full bg-white border-2 border-gray-200 hover:bg-gray-100 text-gray-700 font-bold py-3 px-4 rounded-xl transition shadow-sm mt-3">
                     പുതിയത് തയ്യാറാക്കുക
                 </button>
             </div>
@@ -134,6 +144,7 @@
         const generateBtn = document.getElementById('generateBtn');
         const cancelCropBtn = document.getElementById('cancelCropBtn');
         const downloadBtn = document.getElementById('downloadBtn');
+        const shareBtn = document.getElementById('shareBtn');
         const resetBtn = document.getElementById('resetBtn');
         
         const canvas = document.getElementById('posterCanvas');
@@ -151,7 +162,8 @@
         const PHOTO_WIDTH = 720;  
         const PHOTO_HEIGHT = 720; 
 
-        const TEXT_CENTER_X = 280; 
+        // ⚠️ അലൈൻമെൻ്റ് ഇടത്തുനിന്നും തുടങ്ങുന്ന രീതിയിലാക്കി
+        const TEXT_START_X = 60; // ഇടതുവശത്തെ മാർജിൻ
         const TEXT_Y = 820;        
         
         const FONT_SIZE = 48;
@@ -207,35 +219,32 @@
             // ടെംപ്ലേറ്റ് വരയ്ക്കുന്നു
             ctx.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
 
-            // പേരും ബോക്സും വരയ്ക്കുന്നു
+            // പേരും ബോക്സും വരയ്ക്കുന്നു (ഇടതുവശത്ത് നിന്ന് തുടങ്ങുന്നു)
             if (name) {
                 ctx.font = `bold ${FONT_SIZE}px ${FONT_FAMILY}`;
-                ctx.textAlign = "center"; 
+                ctx.textAlign = "left"; // ⚠️ അലൈൻമെൻ്റ് Left ആക്കി
                 ctx.textBaseline = "middle";
 
                 const textMetrics = ctx.measureText(name);
                 const textWidth = textMetrics.width;
 
                 const boxWidth = textWidth + (BOX_PADDING_X * 2);
-                const boxX = TEXT_CENTER_X - (boxWidth / 2); 
+                const boxX = TEXT_START_X - BOX_PADDING_X; // ഇടത്തുനിന്നും ആരംഭിക്കുന്നു
                 const boxY = TEXT_Y - (BOX_HEIGHT / 2);
 
                 drawRoundedRect(ctx, boxX, boxY, boxWidth, BOX_HEIGHT, BOX_RADIUS, BOX_COLOR);
 
                 ctx.fillStyle = TEXT_COLOR;
-                ctx.fillText(name, TEXT_CENTER_X, TEXT_Y);
+                ctx.fillText(name, TEXT_START_X, TEXT_Y);
             }
 
-            // Layout Update: Hide Workspace, Show Result View
             workspace.classList.add('hidden');
             resultView.classList.remove('hidden');
-            resultView.classList.add('flex'); // Enable flex layout for result view
+            resultView.classList.add('flex');
             
-            // Scroll to top to see the poster
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Helper to draw rounded rectangle 
         function drawRoundedRect(ctx, x, y, width, height, radius, color) {
             ctx.beginPath();
             ctx.moveTo(x + radius, y);
@@ -263,6 +272,7 @@
             ctx.shadowOffsetY = 0;
         }
 
+        // --- Download Feature ---
         downloadBtn.addEventListener('click', function () {
             const link = document.createElement('a');
             const safeName = studentNameInput.value.trim().replace(/[^a-zA-Z0-9]/g, '_') || 'Student';
@@ -271,10 +281,40 @@
             link.click();
         });
 
+        // --- Share Feature API Integration ---
+        shareBtn.addEventListener('click', async function () {
+            // ക്യാൻവാസിനെ ഒരു Blob ഇമേജ് ആയി മാറ്റുന്നു
+            canvas.toBlob(async function(blob) {
+                const safeName = studentNameInput.value.trim().replace(/[^a-zA-Z0-9]/g, '_') || 'Student';
+                const file = new File([blob], `Status_${safeName}.jpg`, { type: 'image/jpeg' });
+                
+                // ഷെയർ ചെയ്യാനുള്ള ഡാറ്റ തയ്യാറാക്കുന്നു
+                const shareData = {
+                    title: 'Admission Status',
+                    text: 'Set your status 👆',
+                    url: 'https://status-nim.vercel.app',
+                    files: [file]
+                };
+
+                // ഫോണിൽ Share ഫീച്ചർ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share(shareData);
+                        console.log('Shared successfully');
+                    } catch (error) {
+                        console.log('Error sharing:', error);
+                    }
+                } else {
+                    // ഷെയർ സപ്പോർട്ട് ഇല്ലാത്ത ഡെസ്ക്ടോപ്പ് ബ്രൗസറുകൾക്കുള്ള മെസ്സേജ്
+                    alert("നിങ്ങളുടെ ബ്രൗസറിൽ നിലവിൽ ഈ ഷെയർ ഫീച്ചർ ലഭ്യമല്ല. ദയവായി ഡൗൺലോഡ് ബട്ടൺ ഉപയോഗിച്ച് പോസ്റ്റർ ഡൗൺലോഡ് ചെയ്ത ശേഷം ഷെയർ ചെയ്യുക.");
+                }
+            }, 'image/jpeg', 0.90);
+        });
+
+        // --- Reset Feature ---
         resetBtn.addEventListener('click', resetUI);
 
         function resetUI() {
-            // Restore Layout: Hide Result View, Show Workspace
             resultView.classList.add('hidden');
             resultView.classList.remove('flex');
             workspace.classList.remove('hidden');
